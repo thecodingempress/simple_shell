@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include "shell.h"
 #include <unistd.h>
 #include <stdio.h>
 #include <string.h>
