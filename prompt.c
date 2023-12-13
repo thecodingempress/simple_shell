@@ -6,7 +6,7 @@
 #define MAXCHAR 1024
 /**
  * main - displays the user's command
- * 
+ *
  * Return: 0
  */
 int main(void)
