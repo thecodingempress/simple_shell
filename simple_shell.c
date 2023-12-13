@@ -1,14 +1,11 @@
 #include <stdio.h>
+#include "shell.h"
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <string.h>
 #include <unistd.h>
 #define PROMPT "#cisfun$ "
-#define MAXLEN 1024
-
-extern char **environ;
-
 /**
  * main - main shell file
  *
