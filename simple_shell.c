@@ -5,29 +5,42 @@
 #include <sys/wait.h>
 #include <string.h>
 #include <unistd.h>
-#define PROMPT "#cisfun$ "
+#include <errno.h>
+#define PROMPT "($) "
 /**
  * main - main shell file
- *
+ * @argc: argument count
+ * @argv: array of args
  * Return: 0
  */
-int main(void)
+int main(int argc, char *argv[])
 {
 	char command[MAXLEN];
-	char *argv[] = {command, NULL};
+	char *args[] = {command, NULL};
 	int status;
 	pid_t pid;
+	int is_interactive = isatty(STDIN_FILENO);
 
 	while (1)
 	{
-		printf(PROMPT);
+		if (is_interactive)
+			printf(PROMPT);
 		if (fgets(command, MAXLEN, stdin) == NULL)
 		{
-			perror("Failed to read from standard input");
-			break;
+			if (feof(stdin))
+			{
+				if (is_interactive)
+					printf("\n");
+				break;
+			}
+			else
+			{
+				perror("Failed to read from standard input");
+				continue;
+			}
 		}
 		command[strcspn(command, "\n")] = 0;
-		if (strcmp(command, "^C") == 0)
+		if (is_interactive && strcmp(command, "^C") == 0)
 			break;
 		pid = fork();
 		if (pid == -1)
@@ -37,11 +50,15 @@ int main(void)
 		}
 		else if (pid == 0)
 		{
-			execve(command, argv, environ);
-			perror("Failed to execute command");
+			execve(command, args, environ);
+			fprintf(stderr, "%s: %s: %s\n", args[0], command, strerror(errno));
 			exit(EXIT_FAILURE);
 		}
 		else
 			waitpid(pid, &status, 0);
+
+		if (!is_interactive)
+			break;
 	}
+	return (0);
 }
